@@ -11,10 +11,17 @@ clock=pygame.time.Clock()
 gameScreen=pygame.display.set_mode(size)
 speed=1
 
+
 # IMPORT THE SHIP GRAPHICS
-RedShipGraphic=pygame.image.load("graphics/RedShip.png")
-BlueShipGraphic=pygame.image.load("graphics/BlueShip.png")
 StartMenuBG=pygame.image.load("graphics/Game_BG.png")
+BlueShipGraphic=pygame.image.load("graphics/BlueShip.png")
+RedShipGraphic=pygame.image.load("graphics/RedShip.png")
+BlueLaser=pygame.image.load("graphics/blue_laser.png")
+RedLaser=pygame.image.load("graphics/red_laser.png")
+BlueBlaster=pygame.mixer.Sound("graphics/hero_laser.wav")
+RedBlaster=pygame.mixer.Sound("graphics/enemy_laser.wav")
+
+
 
 class BUTTON:
     def __init__(self, x, y, w, h, text=""):
@@ -27,6 +34,7 @@ class BUTTON:
 
     def draw_button(self):
         pass
+
 
 class SHIPS:
     def __init__(self, x, y, size, health=100):
@@ -43,6 +51,7 @@ class SHIPS:
 
     def drawLaser(self):
         pass
+
 
 class GAME:
     def __init__(self):
@@ -73,16 +82,17 @@ class GAME:
         keys=pygame.key.get_pressed()
 
         # CONTROLS FOR THE SHIP ON THE RIGHT SIDE
-        if keys[pygame.K_LEFT] and self.RedShip.x>width/2+50:
+        if keys[pygame.K_LEFT] and self.RedShip.x>width/2:
             self.RedShip.x-=1*speed
-        if keys[pygame.K_RIGHT] and self.RedShip.x<width-100:
+        if keys[pygame.K_RIGHT] and self.RedShip.x<width-0:
             self.RedShip.x+=1*speed
         if keys[pygame.K_UP] and self.RedShip.y>1:
             self.RedShip.y-=1*speed
         if keys[pygame.K_DOWN] and self.RedShip.y<700:
             self.RedShip.y+=1*speed
         # LASER BLASTER BUTTON => self.RedShip.drawLaserlaser(laser image, blaster sound)
-
+        if keys[pygame.K_RETURN]:
+            pygame.mixer.Sound.play(RedBlaster)
 
         # CONTROLS FOR THE SHIP ON THE LEFT SIDE
         if keys[pygame.K_a] and self.BlueShip.x>1:
@@ -94,6 +104,9 @@ class GAME:
         if keys[pygame.K_s] and self.BlueShip.y<697:
             self.BlueShip.y+=1*speed
         # LASER BLASTER BUTTON => self.BlueShip.drawLaser(laser image, blaster sound)
+        if keys[pygame.K_z]:
+            pygame.mixer.Sound.play(BlueBlaster)
+
 
 def main():
     clock.tick(fps)
