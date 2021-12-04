@@ -12,12 +12,8 @@ from classes import *
 def main():
     clock.tick(fps)
     RUNTIME=GAME()
-    # RUNTIME.startMenu()
+    RUNTIME.startMenu()
     while True:
-        for event in pygame.event.get():
-            if event.type==pygame.QUIT:
-                pygame.quit()
-
         # GAME RUNTIME HERE
         RUNTIME.runGame()
         pygame.display.update()

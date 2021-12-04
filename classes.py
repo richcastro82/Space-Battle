@@ -1,15 +1,17 @@
 import pygame, os, sys
 from fx import *
 
+fps=30
 width=1200
 height=800
 size=(width, height)
-fps=30
+
 clock=pygame.time.Clock()
 gameScreen=pygame.display.set_mode(size)
-speed=3
-gameFont=pygame.font.SysFont(('ComicSans'), 40)
-score=1
+speed=2
+
+gameFont=pygame.font.SysFont(('ComicSans'), 20)
+
 scoreRect=pygame.Rect(750, 5, 100, 50)
 
 
@@ -25,6 +27,10 @@ class BUTTON:
     def draw_button(self):
         buttonRect=pygame.draw.rect(gameScreen, self.color, (self.x, self.y, self.width, self.height))
         # gameScreen.blit(self, buttonRect)
+        if self.text!="":
+            text=gameFont.render(self.text, 1, (0,0,0))
+            gameScreen.blit(text, (self.x+20, self.y+10, self.width, self.height))
+
 
 
 class SHIPS:
@@ -35,13 +41,15 @@ class SHIPS:
         self.health=health
         self.ShipGraphic=None
         self.ShipLaser=None
+        self.lasers=[]
+        self.score=[]
 
     def drawShip(self, ShipGraphic):
         shipRect=pygame.Rect(self.x, self.y, self.size, self.size)
         gameScreen.blit(ShipGraphic, shipRect)
 
-    def drawLaser(self):
-        pass
+    def drawLaser(self, blasterSound):
+        pygame.mixer.Sound.play(blasterSound)
 
 
 class GAME:
@@ -72,14 +80,29 @@ class GAME:
         # pygame.display.update()
         Red_Score=BUTTON(10, 740, 100, 50, "Score")
         Blue_Score=BUTTON(1090, 740, 100, 50, "Score")
+        Red_Health=BUTTON(120, 740, 100, 50, "Health")
+        Blue_Health=BUTTON(980, 740, 100, 50, "Health")
         gameScreen.blit(StartMenuBG, (0,0))
         border=pygame.Rect(600, 0, 5, 800)
-        pygame.draw.rect(gameScreen, (255,0,0), border)
+        pygame.draw.rect(gameScreen, (180,100,100), border)
         Red_Score.draw_button()
         Blue_Score.draw_button()
+        Blue_Health.draw_button()
+        Red_Health.draw_button()
         self.RedShip.drawShip(RedShipGraphic)
         self.BlueShip.drawShip(BlueShipGraphic)
         keys=pygame.key.get_pressed()
+
+        for event in pygame.event.get():
+            if event.type==pygame.KEYDOWN:
+                if event.key==pygame.K_RETURN:
+                    self.RedShip.drawLaser(RedBlaster)
+                    # pygame.mixer.Sound.play(RedBlaster)
+                if event.key==pygame.K_SPACE:
+                    self.BlueShip.drawLaser(BlueBlaster)
+            if event.type==pygame.QUIT:
+                pygame.quit()
+
 
         # CONTROLS FOR THE SHIP ON THE RIGHT SIDE
         if keys[pygame.K_LEFT] and self.RedShip.x>width/2:
@@ -90,11 +113,6 @@ class GAME:
             self.RedShip.y-=1*speed
         if keys[pygame.K_DOWN] and self.RedShip.y<630:
             self.RedShip.y+=1*speed
-        # LASER BLASTER BUTTON => self.RedShip.drawLaserlaser(laser image, blaster sound)
-        if keys[pygame.K_RETURN]:
-            pygame.mixer.Sound.play(RedBlaster)
-            Red_Lazer=pygame.Rect(self.RedShip.x-50, self.RedShip.y, 50, 50)
-            gameScreen.blit(RedLaser, Red_Lazer)
 
         # CONTROLS FOR THE SHIP ON THE LEFT SIDE
         if keys[pygame.K_a] and self.BlueShip.x>1:
@@ -105,8 +123,3 @@ class GAME:
             self.BlueShip.y-=1*speed
         if keys[pygame.K_s] and self.BlueShip.y<627:
             self.BlueShip.y+=1*speed
-        # LASER BLASTER BUTTON => self.BlueShip.drawLaser(laser image, blaster sound)
-        if keys[pygame.K_z]:
-            pygame.mixer.Sound.play(BlueBlaster)
-            Blue_Lazer=pygame.Rect(self.BlueShip.x+50, self.BlueShip.y, 50, 50)
-            gameScreen.blit(BlueLaser, Blue_Lazer)
