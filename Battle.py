@@ -14,7 +14,6 @@ def main():
     RUNTIME=GAME()
     RUNTIME.startMenu()
     while True:
-        # GAME RUNTIME HERE
         RUNTIME.runGame()
         pygame.display.update()
 
