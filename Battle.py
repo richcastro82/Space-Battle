@@ -12,7 +12,7 @@ from classes import *
 def main():
     clock.tick(fps)
     RUNTIME=GAME()
-    RUNTIME.startMenu()
+    # RUNTIME.startMenu()
     while True:
         RUNTIME.runGame()
         pygame.display.update()
