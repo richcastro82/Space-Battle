@@ -30,22 +30,22 @@ class SHIPS:
         self.ShipLaser=None
         self.lasers=[]
         self.score=0
-        self.shipRect=pygame.Rect(self.x, self.y, self.size, self.size)
+        # self.shipRect=pygame.Rect(self.x, self.y, self.size, self.size)
 
     def drawShip(self, ShipGraphic):
         shipRect=pygame.Rect(self.x, self.y, self.size, self.size)
-        gameScreen.blit(ShipGraphic, shipRect)
+        # gameScreen.blit(ShipGraphic, shipRect)
+        pygame.draw.rect(gameScreen, (255,0,0),shipRect)
 
     def drawLaser(self, blasterSound, laser):
         # pygame.mixer.Sound.play(blasterSound)
         self.lasers.append(laser)
 
-    def moveRedLasers(self, BlueShip, RedShip):
+    def moveRedLasers(self, BlueShip):
         for laser in self.lasers:
             if laser.colliderect(BlueShip.shipRect):
                 BlueShip.health-=10
-                RedShip.score+=10
-
+                # RedShip.score+=10
                 self.lasers.remove(laser)
             else:
                 laser.x-=laserSpeed
