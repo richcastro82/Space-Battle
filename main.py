@@ -20,16 +20,20 @@ P1=pygame.image.load('graphics/BlueShip.png')
 P2=pygame.image.load('graphics/RedShip.png')
 P1Blaster=pygame.mixer.Sound('graphics/hero_laser.wav')
 P2Blaster=pygame.mixer.Sound('graphics/enemy_laser.wav')
-
+missile1=pygame.transform.scale(pygame.image.load('graphics/missile.png'), (120,60))
+missile=pygame.transform.rotate(missile1, 180)
 
 class Ships:
-    def __init__(self, x, y, width, height, color, image, health=100):
+    def __init__(self, x, y, width, height, color, image, health=100, bombs=2):
         self.x=x
         self.y=y
         self.width=width
         self.height=height
         self.color=color
         self.health=health
+        self.bombs=bombs
+        self.bombShells=[]
+        self.missile=missile
         self.lasers=[]
         self.image=image
         self.shipRect=pygame.Rect(self.x, self.y, self.width, self.height)
@@ -43,7 +47,15 @@ class Ships:
         pygame.mixer.Sound.play(blaster)
         self.lasers.append(laser)
 
+    def dropBomb(self, bomb):
+        self.bombShells.append(bomb)
+
     def shots(self):
+        for bomb in self.bombShells:
+            if bomb.x >0and bomb.x<win_width:
+                pygame.draw.rect(screen, (0,255,0), bomb)
+                screen.blit(self.missile, bomb)
+
         for laser in self.lasers:
             if laser.x > 0 and laser.x < win_width:
                 pygame.draw.rect(screen, self.color, laser)
@@ -53,8 +65,8 @@ class Ships:
 def main():
     # GAME INIT
     clock.tick(fps)
-    PLAYER1=Ships(win_width//4, win_height//2, 100, 100, blue, P1)
-    PLAYER2=Ships(win_width//4*3, win_height//2, 100, 100, red, P2)
+    PLAYER1=Ships(win_width//4, win_height//2, 100, 100, blue, P1, missile)
+    PLAYER2=Ships(win_width//4*3, win_height//2, 100, 100, red, P2, missile)
     while True:
         # MAIN GAME LOOP
         pygame.display.update()
@@ -63,6 +75,12 @@ def main():
         PLAYER2.drawShip()
         PLAYER1.shots()
         PLAYER2.shots()
+        for bomb in PLAYER2.bombShells:
+            bomb.x-=1
+            if PLAYER1.shipRect.colliderect(bomb):
+                PLAYER2.bombShells.remove(bomb)
+                PLAYER1.health-=20
+                print(PLAYER1.health)
         # MANAGE PLAYER 1 LASERS
         for laser in PLAYER1.lasers:
             laser.x+=1
@@ -108,6 +126,11 @@ def main():
                 if event.key==pygame.K_RCTRL and len(PLAYER2.lasers)<MAX_LASERS:        # PLAYER 2 FIRE LASER BUTTON
                     laser=pygame.Rect(PLAYER2.x, PLAYER2.y, 40,8)
                     PLAYER2.drawLasers(laser, P2Blaster)
+                if event.key==pygame.K_SPACE and PLAYER2.bombs>0:
+                    PLAYER2.bombs-=1
+                    bomb=pygame.Rect(PLAYER2.x, PLAYER2.y, 10,10)
+                    PLAYER2.dropBomb(bomb)
+
 
 
 if __name__=="__main__":
