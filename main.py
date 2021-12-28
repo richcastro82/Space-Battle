@@ -1,5 +1,9 @@
-# RICHARD CASTRO
-# SPACE BATTLE GAME
+###############################################
+##            RICHARD CASTRO                 ##
+##            DECEMBER 2021                  ##
+##   SPACE BATTLE GAME BUILT WITH PYGAME     ##
+###############################################
+
 
 # GAME CONFIG SETTINGS
 VEL=1
@@ -11,12 +15,14 @@ white=(255,255,255)
 blue=(0,0,255)
 red=(255,0,0)
 
+
 # PYGAME INIT WINDOW SETTINGS
 import pygame, sys
 pygame.init()
 win_size=(win_width, win_height)
 clock=pygame.time.Clock()
 screen=pygame.display.set_mode(win_size)
+
 
 # IMPORTING GRAPHICS AND SOUNDS
 gameFont=pygame.font.SysFont('ComicSans', 30)
@@ -25,6 +31,7 @@ P1=pygame.image.load('graphics/BlueShip.png')
 P2=pygame.image.load('graphics/RedShip.png')
 P1Blaster=pygame.mixer.Sound('graphics/hero_laser.wav')
 P2Blaster=pygame.mixer.Sound('graphics/enemy_laser.wav')
+
 
 # SPACESHIP CLASS
 class Ships:
@@ -38,19 +45,47 @@ class Ships:
         self.health=health
         self.lasers=[]
         self.shipRect=pygame.Rect(self.x,self.y,self.width,self.height)
+
     def drawShip(self):
         shipImage=self.image
         self.shipRect=pygame.Rect(self.x, self.y, self.width, self.height)
         screen.blit(shipImage, self.shipRect)
+
     def drawLasers(self, laser, blaster):
         pygame.mixer.Sound.play(blaster)
         self.lasers.append(laser)
+
+    def drawHealth(self):
+        healthRect=pygame.Rect(self.x,self.y+self.height+10,self.health,5)
+        pygame.draw.rect(screen, self.color, (healthRect))
+
+
     def moveLasers(self):
         for laser in self.lasers:
             if laser.x > 0 and laser.x < win_width:
                 pygame.draw.rect(screen, self.color, laser)
             else:
                 self.lasers.remove(laser)
+
+
+
+def startMenu():
+    pass
+
+
+def gameOver(PLAYER1, PLAYER2):
+    run_game=False
+    while run_game==False:
+        clock.tick(fps)
+        pygame.display.update()
+        screen.blit(bg,(0,0))
+        for event in pygame.event.get():
+            if event.type==pygame.KEYDOWN:
+                if event.key==pygame.K_SPACE:
+                    PLAYER1.health=100
+                    PLAYER2.health=100
+                    run_game=True
+
 
 # MAIN GAME FUNCTION
 def main():
@@ -64,22 +99,29 @@ def main():
         PLAYER2.drawShip()
         PLAYER1.moveLasers()
         PLAYER2.moveLasers()
+        PLAYER1.drawHealth()
+        PLAYER2.drawHealth()
 
         # MANAGE PLAYER 1 LASERS
         for laser in PLAYER1.lasers:
             laser.x+=1
             if PLAYER2.shipRect.colliderect(laser):
                 PLAYER1.lasers.remove(laser)
-                PLAYER2.health-=10
-                print(PLAYER2.health)
+                if PLAYER2.health>0:
+                    PLAYER2.health-=5
+                else:
+                    gameOver(PLAYER1, PLAYER2)
 
         # MANAGE PLAYER 2 LASERS
         for laser in PLAYER2.lasers:
             laser.x-=1
             if PLAYER1.shipRect.colliderect(laser):
                 PLAYER2.lasers.remove(laser)
-                PLAYER1.health-=10
-                print(PLAYER1.health)
+                if PLAYER1.health>0:
+                    PLAYER1.health-=5
+                else:
+                    print('game over')
+                # print(PLAYER1.health)
 
         keys=pygame.key.get_pressed()
         # PLAYER 1 CONTROLS
