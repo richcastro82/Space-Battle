@@ -25,13 +25,14 @@ screen=pygame.display.set_mode(win_size)
 # IMPORTING GRAPHICS AND SOUNDS
 gameFont=pygame.font.SysFont('ComicSans', 30)
 bg=pygame.image.load('graphics/Game_BG.png')
+startbg=pygame.image.load('graphics/startBG.png')
 P1=pygame.image.load('graphics/BlueShip.png')
 P2=pygame.image.load('graphics/RedShip.png')
 P1Blaster=pygame.mixer.Sound('graphics/hero_laser.wav')
 P2Blaster=pygame.mixer.Sound('graphics/enemy_laser.wav')
 
 
-class BUTTON:
+class Button:
     def __init__(self, x, y, width, height, text=""):
         self.x=x
         self.y=y
@@ -40,7 +41,16 @@ class BUTTON:
         self.text=text
 
     def drawButton(self):
-        pass
+        if self.text!="":
+            font=pygame.font.SysFont('comicsans', 40)
+            text=font.render(self.text, 1, (100,50,20))
+            screen.blit(text, (self.x, self.y, self.width, self.height))
+
+    def clickButton(self, pos):
+        if pos[0]>self.x and pos[0]<self.x+self.width:
+            if pos[1]>self.y and pos[1]<self.y+self.width:
+                return True
+        return False
 
 
 # SPACESHIP CLASS
@@ -79,29 +89,28 @@ class Ships:
 
 def startMenu():
     clock.tick(fps)
-    STARTBUTTON=BUTTON(100,100,50,100,text=Start Game)
-    QUITBUTTON=BUTTON(300,100,50,100,text=Quit Game)
+    STARTButton=Button(100,100,50,100,text='Start Game')
+    QUITButton=Button(300,100,50,100,text='Quit Game')
     run_game=False
     while run_game==False:
         pygame.display.update()
-        screen.blit(bg,(0,0))
-        STARTBUTTON.drawButton()
-        QUITBUTTON.drawButton()
+        screen.blit(startbg,(0,0))
+        STARTButton.drawButton()
+        QUITButton.drawButton()
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+        pos=pygame.mouse.get_pos()
+        if event.type==pygame.MOUSEButtonDOWN:
+            if STARTButton.clickButton(pos):
+                run_game=True
 
-
-
-def screenRefresh():
-    # clock.tick(fps)
-    pygame.display.update()
 
 def gameOver(REDSHIP, BLUESHIP):
     run_game=False
     while run_game==False:
-        screenRefresh()
+        pygame.display.update()
         screen.blit(bg,(0,0))
         for event in pygame.event.get():
             if event.type==pygame.KEYDOWN:
@@ -114,11 +123,11 @@ def gameOver(REDSHIP, BLUESHIP):
 # MAIN GAME FUNCTION
 def main():
     clock.tick(fps)
-
+    startMenu()
     REDSHIP=Ships(red, win_width//4, win_height//2, 100, 100,  P1)
     BLUESHIP=Ships(blue, win_width//4*3, win_height//2, 100, 100, P2)
     while True:
-        screenRefresh()
+        pygame.display.update()
         screen.blit(bg,(0,0))
         pygame.draw.line(screen, (255,180,60),[win_width//2,0],[win_width//2,win_height])
         REDSHIP.drawShip()
